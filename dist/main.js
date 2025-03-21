@@ -1,1 +1,109 @@
-(()=>{var o={88:o=>{o.exports=class{constructor(){this.rooms=[]}addRoom(o){return this.rooms.push(o),`Room ${o.number} has been added`}getAvailableRooms(){return this.rooms.filter((o=>o.isAvailable))}}},922:o=>{o.exports=class{constructor(o){this.hotel=o}renderRooms(){const o=document.getElementById("roomsContainer");o.innerHTML="",this.hotel.rooms.forEach((e=>{const n=document.createElement("div");n.className="Room "+(e.isAvailable?"":"booked"),n.innerHTML=`\n        <h3>Room ${e.number} (${e.type})</h3>\n        <p>Status: ${e.isAvailable?"Available":"Booked"}</p>\n        <button onclick="bookRoom(${e.number})" ${e.isAvailable?"":"disabled"}>Book</button>\n        <button onclick="cancelBooking(${e.number})" ${e.isAvailable?"disabled":""}>Cancel</button>\n        `,o.appendChild(n)}))}}},971:o=>{o.exports=class{constructor(o,e){this.number=o,this.type=e,this.isAvailable=!0}book(){return this.isAvailable=!1,`Room ${this.number} has been booked`}cancelBooking(){return this.isAvailable=!0,`Room ${this.number} is free`}}}},e={};function n(t){var r=e[t];if(void 0!==r)return r.exports;var s=e[t]={exports:{}};return o[t](s,s.exports,n),s.exports}n.g=function(){if("object"==typeof globalThis)return globalThis;try{return this||new Function("return this")()}catch(o){if("object"==typeof window)return window}}();const t=n(88),r=n(971),s=n(922),i=new t("Grand Budapesht"),a=new r(101,"single"),l=new r(102,"double"),c=new r(103,"suite");i.addRoom(a),i.addRoom(l),i.addRoom(c);const b=new s(i);b.renderRooms(),n.g.bookRoom=function(o){const e=i.rooms.find((e=>e.number===o));e&&(alert(e.book()),b.renderRooms())},n.g.cancelBooking=function(o){const e=i.rooms.find((e=>e.number===o));e&&(alert(e.cancelBooking()),b.renderRooms())}})();
+/*
+ * ATTENTION: The "eval" devtool has been used (maybe by default in mode: "development").
+ * This devtool is neither made for production nor for readable output files.
+ * It uses "eval()" calls to create a separate source file in the browser devtools.
+ * If you are trying to read the output file, select a different devtool (https://webpack.js.org/configuration/devtool/)
+ * or disable the default devtool with "devtool: false".
+ * If you are looking for production-ready output files, see mode: "production" (https://webpack.js.org/configuration/mode/).
+ */
+/******/ (() => { // webpackBootstrap
+/******/ 	var __webpack_modules__ = ({
+
+/***/ "./src/index.js":
+/*!**********************!*\
+  !*** ./src/index.js ***!
+  \**********************/
+/***/ ((__unused_webpack_module, __unused_webpack_exports, __webpack_require__) => {
+
+eval("const Hotel = __webpack_require__(/*! ./modules/Hotel */ \"./src/modules/Hotel.js\")\r\nconst Room = __webpack_require__(/*! ./modules/Room */ \"./src/modules/Room.js\")\r\nconst UI = __webpack_require__(/*! ./modules/UI */ \"./src/modules/UI.js\")\r\nconst PremiumRoom = __webpack_require__(/*! ./modules/PremiumRoom */ \"./src/modules/PremiumRoom.js\")\r\n\r\nconst hotel = new Hotel(\"Grand Budapesht\")\r\nconst room101 = new Room(101, 'single')\r\nconst room102 = new Room(102, 'double')\r\nconst room103 = new Room(103, 'suite')\r\nconst room201 = new PremiumRoom(201, 'single', 'gym free access')\r\n\r\n\r\nhotel.addRoom(room101)\r\nhotel.addRoom(room102)\r\nhotel.addRoom(room103)\r\nhotel.addRoom(room201)\r\n\r\nconst ui = new UI(hotel)\r\nui.renderRooms()\r\n\r\n__webpack_require__.g.bookRoom = function(number) {\r\n    const room = hotel.rooms.find(r => r.number === number)\r\n    if (room){\r\n        alert(room.book())\r\n        ui.renderRooms()\r\n    }\r\n}\r\n\r\n__webpack_require__.g.cancelBooking = function (number){\r\n    const room = hotel.rooms.find(r => r.number === number)\r\n    if (room) {\r\n        alert(room.cancelBooking())\r\n        ui.renderRooms()\r\n    }\r\n}\n\n//# sourceURL=webpack://hotel_booking_system/./src/index.js?");
+
+/***/ }),
+
+/***/ "./src/modules/Hotel.js":
+/*!******************************!*\
+  !*** ./src/modules/Hotel.js ***!
+  \******************************/
+/***/ ((module) => {
+
+eval("class Hotel {\r\n    constructor() {\r\n        this.rooms = []\r\n    }\r\n    addRoom(room) {\r\n        this.rooms.push(room)\r\n        return `Room ${room.number} has been added`\r\n    }\r\n    getAvailableRooms() {\r\n        return this.rooms.filter(room => room.isAvailable)\r\n    }\r\n}\r\n\r\n\r\nmodule.exports = Hotel\n\n//# sourceURL=webpack://hotel_booking_system/./src/modules/Hotel.js?");
+
+/***/ }),
+
+/***/ "./src/modules/PremiumRoom.js":
+/*!************************************!*\
+  !*** ./src/modules/PremiumRoom.js ***!
+  \************************************/
+/***/ ((module, __unused_webpack_exports, __webpack_require__) => {
+
+eval("const Room = __webpack_require__(/*! ./Room */ \"./src/modules/Room.js\");\r\n\r\nclass PremiumRoom extends Room {\r\n    constructor(number, type, premiumFeature){\r\n        super(number, type)\r\n        this.premiumFeature = premiumFeature\r\n    }\r\n\r\n    book(){\r\n        return super.book()\r\n    }\r\n\r\n    cancelBooking(){\r\n        return super.cancelBooking()\r\n    }\r\n}\r\n\r\n\r\nmodule.exports = PremiumRoom\n\n//# sourceURL=webpack://hotel_booking_system/./src/modules/PremiumRoom.js?");
+
+/***/ }),
+
+/***/ "./src/modules/Room.js":
+/*!*****************************!*\
+  !*** ./src/modules/Room.js ***!
+  \*****************************/
+/***/ ((module) => {
+
+eval("class Room {\r\n    constructor(number, type) {\r\n        this.number = number\r\n        this.type = type\r\n        this.isAvailable = true\r\n    }\r\n    book() {\r\n        this.isAvailable = false\r\n        return `Room ${this.number} has been booked`\r\n    }\r\n    cancelBooking() {\r\n        this.isAvailable = true\r\n        return `Room ${this.number} is free`\r\n    }\r\n}\r\n\r\n\r\nmodule.exports = Room\n\n//# sourceURL=webpack://hotel_booking_system/./src/modules/Room.js?");
+
+/***/ }),
+
+/***/ "./src/modules/UI.js":
+/*!***************************!*\
+  !*** ./src/modules/UI.js ***!
+  \***************************/
+/***/ ((module) => {
+
+eval("class UI {\r\n    constructor(hotel) {\r\n        this.hotel = hotel;\r\n    }\r\n    renderRooms() {\r\n        const container = document.getElementById(\"roomsContainer\");\r\n        container.innerHTML = \"\";\r\n\r\n        this.hotel.rooms.forEach(room => {\r\n            const isPremium = room.premiumFeature ? `<p><strong>Premium Service:</strong> ${room.premiumFeature}</p>` : \"\"\r\n            const premiumClass = room.premiumFeature ? \"premium-room\" : \"\"\r\n\r\n            const roomDiv = document.createElement(\"div\");\r\n            roomDiv.className = `Room ${premiumClass} ${room.isAvailable ? \"\" : \"booked\"}`;\r\n            roomDiv.innerHTML = `\r\n        <h3>Room ${room.number} (${room.type})</h3>\r\n        <p>Status: ${room.isAvailable ? \"Available\" : \"Booked\"}</p>\r\n        ${isPremium}\r\n        <button onclick=\"bookRoom(${room.number})\" ${room.isAvailable ? \"\" : \"disabled\"}>Book</button>\r\n        <button onclick=\"cancelBooking(${room.number})\" ${room.isAvailable ? \"disabled\" : \"\"}>Cancel</button>\r\n        `;\r\n            container.appendChild(roomDiv);\r\n        });\r\n    }\r\n}\r\n\r\n\r\nmodule.exports = UI;\n\n//# sourceURL=webpack://hotel_booking_system/./src/modules/UI.js?");
+
+/***/ })
+
+/******/ 	});
+/************************************************************************/
+/******/ 	// The module cache
+/******/ 	var __webpack_module_cache__ = {};
+/******/ 	
+/******/ 	// The require function
+/******/ 	function __webpack_require__(moduleId) {
+/******/ 		// Check if module is in cache
+/******/ 		var cachedModule = __webpack_module_cache__[moduleId];
+/******/ 		if (cachedModule !== undefined) {
+/******/ 			return cachedModule.exports;
+/******/ 		}
+/******/ 		// Create a new module (and put it into the cache)
+/******/ 		var module = __webpack_module_cache__[moduleId] = {
+/******/ 			// no module.id needed
+/******/ 			// no module.loaded needed
+/******/ 			exports: {}
+/******/ 		};
+/******/ 	
+/******/ 		// Execute the module function
+/******/ 		__webpack_modules__[moduleId](module, module.exports, __webpack_require__);
+/******/ 	
+/******/ 		// Return the exports of the module
+/******/ 		return module.exports;
+/******/ 	}
+/******/ 	
+/************************************************************************/
+/******/ 	/* webpack/runtime/global */
+/******/ 	(() => {
+/******/ 		__webpack_require__.g = (function() {
+/******/ 			if (typeof globalThis === 'object') return globalThis;
+/******/ 			try {
+/******/ 				return this || new Function('return this')();
+/******/ 			} catch (e) {
+/******/ 				if (typeof window === 'object') return window;
+/******/ 			}
+/******/ 		})();
+/******/ 	})();
+/******/ 	
+/************************************************************************/
+/******/ 	
+/******/ 	// startup
+/******/ 	// Load entry module and return exports
+/******/ 	// This entry module can't be inlined because the eval devtool is used.
+/******/ 	var __webpack_exports__ = __webpack_require__("./src/index.js");
+/******/ 	
+/******/ })()
+;

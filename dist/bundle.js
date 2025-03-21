@@ -15,7 +15,7 @@
   \**********************/
 /***/ ((__unused_webpack_module, __unused_webpack_exports, __webpack_require__) => {
 
-eval("const Hotel = __webpack_require__(/*! ./modules/Hotel */ \"./src/modules/Hotel.js\")\r\nconst Room = __webpack_require__(/*! ./modules/Room */ \"./src/modules/Room.js\")\r\nconst UI = __webpack_require__(/*! ./modules/UI */ \"./src/modules/UI.js\")\r\n\r\nconst hotel = new Hotel(\"Grand Budapesht\")\r\nconst room101 = new Room(101, 'single')\r\nconst room102 = new Room(102, 'double')\r\nconst room103 = new Room(103, 'suite')\r\n\r\nhotel.addRoom(room101)\r\nhotel.addRoom(room102)\r\nhotel.addRoom(room103)\r\n\r\nconst ui = new UI(hotel)\r\nui.renderRooms()\r\n\r\n__webpack_require__.g.bookRoom = function(number) {\r\n    const room = hotel.rooms.find(r => r.number === number)\r\n    if (room){\r\n        alert(room.book())\r\n        ui.renderRooms()\r\n    }\r\n}\r\n\r\n__webpack_require__.g.cancelBooking = function (number){\r\n    const room = hotel.rooms.find(r => r.number === number)\r\n    if (room) {\r\n        alert(room.cancelBooking())\r\n        ui.renderRooms()\r\n    }\r\n}\n\n//# sourceURL=webpack://hotel_booking_system/./src/index.js?");
+eval("const Hotel = __webpack_require__(/*! ./modules/Hotel */ \"./src/modules/Hotel.js\")\r\nconst Room = __webpack_require__(/*! ./modules/Room */ \"./src/modules/Room.js\")\r\nconst UI = __webpack_require__(/*! ./modules/UI */ \"./src/modules/UI.js\")\r\nconst PremiumRoom = __webpack_require__(/*! ./modules/PremiumRoom */ \"./src/modules/PremiumRoom.js\")\r\n\r\nconst hotel = new Hotel(\"Grand Budapesht\")\r\nconst room101 = new Room(101, 'single')\r\nconst room102 = new Room(102, 'double')\r\nconst room103 = new Room(103, 'suite')\r\nconst room201 = new PremiumRoom(201, 'single', 'gym free access')\r\n\r\n\r\nhotel.addRoom(room101)\r\nhotel.addRoom(room102)\r\nhotel.addRoom(room103)\r\nhotel.addRoom(room201)\r\n\r\nconst ui = new UI(hotel)\r\nui.renderRooms()\r\n\r\n__webpack_require__.g.bookRoom = function(number) {\r\n    const room = hotel.rooms.find(r => r.number === number)\r\n    if (room){\r\n        alert(room.book())\r\n        ui.renderRooms()\r\n    }\r\n}\r\n\r\n__webpack_require__.g.cancelBooking = function (number){\r\n    const room = hotel.rooms.find(r => r.number === number)\r\n    if (room) {\r\n        alert(room.cancelBooking())\r\n        ui.renderRooms()\r\n    }\r\n}\n\n//# sourceURL=webpack://hotel_booking_system/./src/index.js?");
 
 /***/ }),
 
@@ -25,7 +25,17 @@ eval("const Hotel = __webpack_require__(/*! ./modules/Hotel */ \"./src/modules/H
   \******************************/
 /***/ ((module) => {
 
-eval("class Hotel {\r\n    constructor() {\r\n        this.rooms = []\r\n    }\r\n    addRoom(room) {\r\n        this.rooms.push(room)\r\n        return `Room ${room.number} has been added`\r\n    }\r\n    getAvailableRooms() {\r\n        return this.rooms.filter(room => room.isAvailable)\r\n    }\r\n}\r\n\r\nmodule.exports = Hotel\n\n//# sourceURL=webpack://hotel_booking_system/./src/modules/Hotel.js?");
+eval("class Hotel {\r\n    constructor() {\r\n        this.rooms = []\r\n    }\r\n    addRoom(room) {\r\n        this.rooms.push(room)\r\n        return `Room ${room.number} has been added`\r\n    }\r\n    getAvailableRooms() {\r\n        return this.rooms.filter(room => room.isAvailable)\r\n    }\r\n}\r\n\r\n\r\nmodule.exports = Hotel\n\n//# sourceURL=webpack://hotel_booking_system/./src/modules/Hotel.js?");
+
+/***/ }),
+
+/***/ "./src/modules/PremiumRoom.js":
+/*!************************************!*\
+  !*** ./src/modules/PremiumRoom.js ***!
+  \************************************/
+/***/ ((module, __unused_webpack_exports, __webpack_require__) => {
+
+eval("const Room = __webpack_require__(/*! ./Room */ \"./src/modules/Room.js\");\r\n\r\nclass PremiumRoom extends Room {\r\n    constructor(number, type, premiumFeature){\r\n        super(number, type)\r\n        this.premiumFeature = premiumFeature\r\n    }\r\n\r\n    book(){\r\n        return super.book()\r\n    }\r\n\r\n    cancelBooking(){\r\n        return super.cancelBooking()\r\n    }\r\n}\r\n\r\n\r\nmodule.exports = PremiumRoom\n\n//# sourceURL=webpack://hotel_booking_system/./src/modules/PremiumRoom.js?");
 
 /***/ }),
 
@@ -35,7 +45,7 @@ eval("class Hotel {\r\n    constructor() {\r\n        this.rooms = []\r\n    }\r
   \*****************************/
 /***/ ((module) => {
 
-eval("class Room {\r\n    constructor(number, type) {\r\n        this.number = number\r\n        this.type = type\r\n        this.isAvailable = true\r\n    }\r\n    book() {\r\n        this.isAvailable = false\r\n        return `Room ${this.number} has been booked`\r\n    }\r\n    cancelBooking() {\r\n        this.isAvailable = true\r\n        return `Room ${this.number} is free`\r\n    }\r\n}\r\n\r\nmodule.exports = Room\n\n//# sourceURL=webpack://hotel_booking_system/./src/modules/Room.js?");
+eval("class Room {\r\n    constructor(number, type) {\r\n        this.number = number\r\n        this.type = type\r\n        this.isAvailable = true\r\n    }\r\n    book() {\r\n        this.isAvailable = false\r\n        return `Room ${this.number} has been booked`\r\n    }\r\n    cancelBooking() {\r\n        this.isAvailable = true\r\n        return `Room ${this.number} is free`\r\n    }\r\n}\r\n\r\n\r\nmodule.exports = Room\n\n//# sourceURL=webpack://hotel_booking_system/./src/modules/Room.js?");
 
 /***/ }),
 
@@ -45,7 +55,7 @@ eval("class Room {\r\n    constructor(number, type) {\r\n        this.number = n
   \***************************/
 /***/ ((module) => {
 
-eval("class UI {\r\n    constructor(hotel) {\r\n        this.hotel = hotel;\r\n    }\r\n    renderRooms() {\r\n        const container = document.getElementById(\"roomsContainer\");\r\n        container.innerHTML = \"\";\r\n\r\n        this.hotel.rooms.forEach(room => {\r\n            const roomDiv = document.createElement(\"div\");\r\n            roomDiv.className = `Room ${room.isAvailable ? \"\" : \"booked\"}`;\r\n            roomDiv.innerHTML = `\r\n        <h3>Room ${room.number} (${room.type})</h3>\r\n        <p>Status: ${room.isAvailable ? \"Available\" : \"Booked\"}</p>\r\n        <button onclick=\"bookRoom(${room.number})\" ${room.isAvailable ? \"\" : \"disabled\"}>Book</button>\r\n        <button onclick=\"cancelBooking(${room.number})\" ${room.isAvailable ? \"disabled\" : \"\"}>Cancel</button>\r\n        `;\r\n            container.appendChild(roomDiv);\r\n        });\r\n    }\r\n}\r\n\r\nmodule.exports = UI;\n\n//# sourceURL=webpack://hotel_booking_system/./src/modules/UI.js?");
+eval("class UI {\r\n    constructor(hotel) {\r\n        this.hotel = hotel;\r\n    }\r\n    renderRooms() {\r\n        const container = document.getElementById(\"roomsContainer\");\r\n        container.innerHTML = \"\";\r\n\r\n        this.hotel.rooms.forEach(room => {\r\n            const isPremium = room.premiumFeature ? `<p><strong>Premium Service:</strong> ${room.premiumFeature}</p>` : \"\"\r\n            const premiumClass = room.premiumFeature ? \"premium-room\" : \"\"\r\n\r\n            const roomDiv = document.createElement(\"div\");\r\n            roomDiv.className = `Room ${premiumClass} ${room.isAvailable ? \"\" : \"booked\"}`;\r\n            roomDiv.innerHTML = `\r\n        <h3>Room ${room.number} (${room.type})</h3>\r\n        <p>Status: ${room.isAvailable ? \"Available\" : \"Booked\"}</p>\r\n        ${isPremium}\r\n        <button onclick=\"bookRoom(${room.number})\" ${room.isAvailable ? \"\" : \"disabled\"}>Book</button>\r\n        <button onclick=\"cancelBooking(${room.number})\" ${room.isAvailable ? \"disabled\" : \"\"}>Cancel</button>\r\n        `;\r\n            container.appendChild(roomDiv);\r\n        });\r\n    }\r\n}\r\n\r\n\r\nmodule.exports = UI;\n\n//# sourceURL=webpack://hotel_booking_system/./src/modules/UI.js?");
 
 /***/ })
 
