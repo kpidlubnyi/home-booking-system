@@ -6,11 +6,17 @@ class Room {
     }
     book() {
         this.isAvailable = false
+        this.saveChanges()
         return `Room ${this.number} has been booked`
     }
     cancelBooking() {
         this.isAvailable = true
+        this.saveChanges()
         return `Room ${this.number} is free`
+    }
+
+    saveChanges(){
+        global.hotelInstance.saveToLocalStorage()
     }
 }
 
