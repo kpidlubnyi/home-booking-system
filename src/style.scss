@@ -1,0 +1,66 @@
+$color-available: #a3f3ab;
+$color-booked: #ff8b94;
+$color-premium: #da52f2;
+$color-background: #f4f4f4;
+$color-text: #333;
+
+body {
+    font-family: Arial, sans-serif;
+    text-align: center;
+    background-color: $color-background;
+    margin: 0;
+    padding: 20px;
+    color: $color-text;
+}
+
+#roomsContainer {
+    display: flex;
+    justify-content: center;
+    gap: 25px;
+    flex-wrap: wrap;
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+.Room {
+    border: 2px solid #313131;
+    padding: 1rem;
+    margin-bottom: 1rem;
+    border-radius: 8px;
+    width: 250px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+
+    &.available {
+        background-color: $color-available;
+    }
+
+    &.booked {
+        background-color: $color-booked;
+    }
+
+    &.premium-room {
+        background-color: $color-premium;
+    }
+
+    .room-actions {
+        display: flex;
+        justify-content: space-between;
+        margin-top: 10px;
+    }
+
+    button {
+        flex-grow: 1;
+        margin: 0 5px;
+        padding: 8px 15px;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+    }
+
+    .reviews-container {
+        margin-top: 15px;
+        text-align: left;
+        max-height: 200px;
+        overflow-y: auto;
+    }
+}
