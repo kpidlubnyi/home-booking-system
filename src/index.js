@@ -54,7 +54,7 @@ global.loadRoomReviews = async function(number) {
         const reviews = await HotelAPI.fetchReviews()
         const reviewsHTML = reviews.map(review => 
             `<div class="review">
-                <p><strong>Email:</strong> ${review.email}</p>
+                <p><strong>${review.email}:</strong></p>
                 <p>${review.body}</p>
             </div>`
         ).join('')
