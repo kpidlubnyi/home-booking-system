@@ -35,7 +35,7 @@ eval("const Room = __webpack_require__(/*! ./Room */ \"./src/modules/Room.js\")\
   \************************************/
 /***/ ((module, __unused_webpack_exports, __webpack_require__) => {
 
-eval("const Room = __webpack_require__(/*! ./Room */ \"./src/modules/Room.js\");\r\n\r\nclass PremiumRoom extends Room {\r\n    constructor(number, type, premiumFeature){\r\n        super(number, type)\r\n        this.premiumFeature = premiumFeature\r\n    }\r\n\r\n    book(){\r\n        return super.book()\r\n    }\r\n\r\n    cancelBooking(){\r\n        return super.cancelBooking()\r\n    }\r\n}\r\n\r\n\r\nmodule.exports = PremiumRoom\n\n//# sourceURL=webpack://hotel_booking_system/./src/modules/PremiumRoom.js?");
+eval("const Room = __webpack_require__(/*! ./Room */ \"./src/modules/Room.js\");\r\n\r\nclass PremiumRoom extends Room {\r\n    constructor(number, type, premiumFeature){\r\n        super(number, type)\r\n        this.premiumFeature = premiumFeature\r\n    }\r\n\r\n    book(){\r\n        return super.book()\r\n    }\r\n\r\n    cancelBooking(){\r\n        return super.cancelBooking()\r\n    }\r\n\r\n    getMaskedCardNumber(){\r\n        return super.getMaskedCardNumber()\r\n    }\r\n\r\n    setCardNumber(number) {\r\n        return super.setCardNumber(number)\r\n    }\r\n}\r\n\r\n\r\nmodule.exports = PremiumRoom\n\n//# sourceURL=webpack://hotel_booking_system/./src/modules/PremiumRoom.js?");
 
 /***/ }),
 
@@ -45,7 +45,7 @@ eval("const Room = __webpack_require__(/*! ./Room */ \"./src/modules/Room.js\");
   \*****************************/
 /***/ ((module, __unused_webpack_exports, __webpack_require__) => {
 
-eval("class Room {\r\n    constructor(number, type) {\r\n        this.number = number\r\n        this.type = type\r\n        this.isAvailable = true\r\n    }\r\n    book() {\r\n        this.isAvailable = false\r\n        this.saveChanges()\r\n        return `Room ${this.number} has been booked`\r\n    }\r\n    cancelBooking() {\r\n        this.isAvailable = true\r\n        this.saveChanges()\r\n        return `Room ${this.number} is free`\r\n    }\r\n\r\n    saveChanges(){\r\n        __webpack_require__.g.hotelInstance.saveToLocalStorage()\r\n    }\r\n}\r\n\r\n\r\nmodule.exports = Room\n\n//# sourceURL=webpack://hotel_booking_system/./src/modules/Room.js?");
+eval("class Room {\r\n    #cardNumber = null\r\n\r\n    constructor(number, type) {\r\n        this.number = number\r\n        this.type = type\r\n        this.isAvailable = true\r\n    }\r\n    book() {\r\n\r\n        this.setCardNumber(prompt(\"Enter your card: \"))\r\n\r\n        if (this.#cardNumber) {\r\n            this.isAvailable = false\r\n            this.saveChanges()\r\n            return `Thanks for booking Room ${this.number}! \\nEntered card is : ${this.getMaskedCardNumber()}`\r\n        }\r\n        else {\r\n            return 'Card must contain only 16 digits!'\r\n        }\r\n    }\r\n    cancelBooking() {\r\n        this.#cardNumber = null\r\n        this.isAvailable = true\r\n        this.saveChanges()\r\n        return `Room ${this.number} is free`\r\n    }\r\n\r\n    saveChanges(){\r\n        __webpack_require__.g.hotelInstance.saveToLocalStorage()\r\n    }\r\n\r\n    setCardNumber(number){\r\n        if (/^\\d{16}$/.test(number)) {\r\n            this.#cardNumber = number;\r\n        }\r\n    }\r\n\r\n    getMaskedCardNumber() { \r\n        return '**** **** **** ' + this.#cardNumber.slice(-4)\r\n    }\r\n}\r\n\r\n\r\nmodule.exports = Room\n\n//# sourceURL=webpack://hotel_booking_system/./src/modules/Room.js?");
 
 /***/ }),
 

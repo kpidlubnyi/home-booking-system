@@ -13,6 +13,14 @@ class PremiumRoom extends Room {
     cancelBooking(){
         return super.cancelBooking()
     }
+
+    getMaskedCardNumber(){
+        return super.getMaskedCardNumber()
+    }
+
+    setCardNumber(number) {
+        return super.setCardNumber(number)
+    }
 }
 
 
