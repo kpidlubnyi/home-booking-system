@@ -25,6 +25,10 @@ class Hotel {
                 isAvailable: room.isAvailable
             }
 
+            if (room.bookedBy){
+                roomData.bookedBy = room.bookedBy
+            }
+
             if (room.premiumFeature){
                 roomData.premiumFeature = room.premiumFeature
             }
@@ -53,6 +57,9 @@ class Hotel {
                 }
 
                 room.isAvailable = roomData.isAvailable
+
+                if (roomData.bookedBy) 
+                    room.bookedBy = roomData.bookedBy
 
                 this.rooms.push(room)
             })

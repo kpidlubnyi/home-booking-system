@@ -1,10 +1,11 @@
 class Room {
-    #cardNumber = null
+    #cardNumber;
 
     constructor(number, type) {
         this.number = number
         this.type = type
         this.isAvailable = true
+        this.bookedBy;
     }
     book() {
 
@@ -13,11 +14,10 @@ class Room {
         if (this.#cardNumber) {
             this.isAvailable = false
             this.saveChanges()
-            return `Thanks for booking Room ${this.number}! \nEntered card is : ${this.getMaskedCardNumber()}`
+            return true
         }
-        else {
-            return 'Card must contain only 16 digits!'
-        }
+        else 
+            return false
     }
     cancelBooking() {
         this.#cardNumber = null

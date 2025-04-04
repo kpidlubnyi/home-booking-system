@@ -3,10 +3,13 @@ const Room = require("./modules/Room")
 const UI = require("./modules/UI")
 const PremiumRoom = require("./modules/PremiumRoom")
 const HotelAPI = require("./modules/HotelAPI")
+const UserManager = require('./modules/UserManager')
 import './style.scss'
 
 const hotel = new Hotel("Grand_Budapesht")
 global.hotelInstance = hotel
+const userManager = new UserManager('1')
+let currentUser = null
 
 if (hotel.rooms.length === 0){
     const room101 = new Room(101, 'single')
@@ -27,16 +30,37 @@ const ui = new UI(hotel)
 ui.renderRooms()
 
 global.bookRoom = function(number) {
-    const room = hotel.rooms.find(r => r.number === number)
-    if (room){
-        alert(room.book())
-        ui.renderRooms()
+    if (currentUser) {
+        const room = hotel.rooms.find(r => r.number === number)
+        if (room){
+            let success = room.book()
+            if (success) {
+                room.bookedBy = currentUser
+                room.saveChanges()
+                alert(`Thanks for booking Room ${room.number}!\nEntered card is : ${room.getMaskedCardNumber()}\nBooked by: ${room.bookedBy}`)
+            }
+            else {
+                alert('Card number musy contain 16 digits!')
+            }
+
+            ui.renderRooms()
+        }
     }
+    else
+        alert('You must be logged in to book the room!')
 }
 
 global.cancelBooking = function (number){
     const room = hotel.rooms.find(r => r.number === number)
+
+    if (currentUser !== room.bookedBy){
+        alert(`You must be logged in as ${room.bookedBy} to cancel booking`)
+        return
+    }
+
     if (room) {
+        room.bookedBy = null
+        room.saveChanges()
         alert(room.cancelBooking())
         ui.renderRooms()
     }
@@ -62,4 +86,25 @@ global.loadRoomReviews = async function(number) {
     } catch (error) {
         reviewsContainer.innerHTML = `<p>Error loading reviews: ${error.message}</p>`
     }
+};
+
+global.registerUser = function() {
+    let username = document.getElementById('username').value
+    let password = document.getElementById('password').value
+
+    let successful = userManager.register(username, password)
+    if (successful)
+        document.getElementById('authStatus').textContent = `Registered: ${username}`
+}
+
+global.loginUser = function() {
+    let username = document.getElementById('username').value
+    let password = document.getElementById('password').value
+
+    let successful = userManager.login(username, password)
+    if (successful) {
+        document.getElementById('authStatus').textContent = `Logged in as: ${username}`
+        currentUser = username
+    }
+
 }
