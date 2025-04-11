@@ -1,7 +1,7 @@
-const Room = require('./Room')
-const PremiumRoom = require('./PremiumRoom')
+import Room from './Room'
+import PremiumRoom from './PremiumRoom'
 
-class Hotel {
+export default class Hotel {
     constructor(name) {
         this.rooms = [],
         this.name = name,
@@ -66,6 +66,3 @@ class Hotel {
         }
     }
 }
-
-
-module.exports = Hotel

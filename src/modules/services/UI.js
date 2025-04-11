@@ -1,6 +1,4 @@
-const HotelAPI = require('./HotelAPI')
-
-class UI {
+export default class UI {
     constructor(hotel) {
         this.hotel = hotel;
     }
@@ -8,11 +6,17 @@ class UI {
     renderRooms() {
         const container = document.getElementById("roomsContainer");
         container.innerHTML = "";
+        
+        const isLoggedIn = sessionStorage.getItem('loggedInUser') !== null;
+        const currentUser = isLoggedIn ? JSON.parse(sessionStorage.getItem('loggedInUser')).username : null;
 
         this.hotel.rooms.forEach(room => {
             const isPremium = room.premiumFeature ? `<p><strong>Premium Service:</strong> ${room.premiumFeature}</p>` : ""
             const premiumClass = room.premiumFeature ? "premium-room" : ""
             const bookedBy = room.bookedBy ? `<p><strong>Booked by:</strong> ${room.bookedBy}</p>` : "";
+            
+            const bookDisabled = !isLoggedIn || !room.isAvailable ? "disabled" : "";
+            const cancelDisabled = room.isAvailable || !isLoggedIn || (room.bookedBy !== currentUser) ? "disabled" : "";
 
             const roomDiv = document.createElement("div");
             roomDiv.id = `room-${room.number}`;
@@ -23,8 +27,8 @@ class UI {
                 ${isPremium}
                 ${bookedBy}
                 <div class="room-actions">
-                    <button onclick="bookRoom(${room.number})" ${room.isAvailable ? "" : "disabled"}>Book</button>
-                    <button onclick="cancelBooking(${room.number})" ${room.isAvailable ? "disabled" : ""}>Cancel</button>
+                    <button onclick="bookRoom(${room.number})" ${bookDisabled}>Book</button>
+                    <button onclick="cancelBooking(${room.number})" ${cancelDisabled}>Cancel</button>
                     <button onclick="loadRoomReviews(${room.number})">Load Reviews</button>
                 </div>
                 <div id="reviews-${room.number}" class="reviews-container"></div>
@@ -33,5 +37,3 @@ class UI {
         });
     }
 }
-
-module.exports = UI

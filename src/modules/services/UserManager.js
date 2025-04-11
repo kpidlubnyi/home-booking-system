@@ -1,6 +1,6 @@
-const User = require('/src/modules/User')
+import User from "../User";
 
-class UserManager {
+export default class UserManager {
     constructor(name) {
         this.name = name
         this.users = [];
@@ -46,5 +46,3 @@ class UserManager {
         }
     }
 }
-
-module.exports = UserManager

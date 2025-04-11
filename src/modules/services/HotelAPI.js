@@ -1,4 +1,4 @@
-class HotelAPI {
+export default class HotelAPI {
     static async fetchReviews() {
         const res = await fetch("https://jsonplaceholder.typicode.com/comments?postId=1")
         const reviews = await res.json()
@@ -12,5 +12,3 @@ class HotelAPI {
         }))
     }
 }
-
-module.exports = HotelAPI

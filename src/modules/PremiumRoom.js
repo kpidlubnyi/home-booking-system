@@ -1,6 +1,6 @@
-const Room = require("./Room");
+import Room from "./Room"
 
-class PremiumRoom extends Room {
+export default class PremiumRoom extends Room {
     constructor(number, type, premiumFeature){
         super(number, type)
         this.premiumFeature = premiumFeature
@@ -22,6 +22,3 @@ class PremiumRoom extends Room {
         return super.setCardNumber(number)
     }
 }
-
-
-module.exports = PremiumRoom

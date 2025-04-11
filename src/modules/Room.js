@@ -1,4 +1,4 @@
-class Room {
+export default class Room {
     #cardNumber;
 
     constructor(number, type) {
@@ -40,6 +40,3 @@ class Room {
         return '**** **** **** ' + this.#cardNumber.slice(-4)
     }
 }
-
-
-module.exports = Room
