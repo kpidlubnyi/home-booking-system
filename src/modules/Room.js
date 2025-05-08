@@ -1,4 +1,4 @@
-export default class Room {
+export class Room {
     #cardNumber;
 
     constructor(number, type) {
@@ -7,8 +7,8 @@ export default class Room {
         this.isAvailable = true
         this.bookedBy;
     }
+    
     book() {
-
         this.setCardNumber(prompt("Enter your card: "))
 
         if (this.#cardNumber) {
@@ -19,6 +19,7 @@ export default class Room {
         else 
             return false
     }
+    
     cancelBooking() {
         this.#cardNumber = null
         this.isAvailable = true
@@ -27,7 +28,9 @@ export default class Room {
     }
 
     saveChanges(){
-        global.hotelInstance.saveToLocalStorage()
+        if (typeof global !== 'undefined' && global.hotelInstance && global.hotelInstance.saveToLocalStorage) {
+            global.hotelInstance.saveToLocalStorage()
+        }
     }
 
     setCardNumber(number){
@@ -37,6 +40,8 @@ export default class Room {
     }
 
     getMaskedCardNumber() { 
-        return '**** **** **** ' + this.#cardNumber.slice(-4)
+        return this.#cardNumber ? '**** **** **** ' + this.#cardNumber.slice(-4) : '';
     }
 }
+
+export default Room;

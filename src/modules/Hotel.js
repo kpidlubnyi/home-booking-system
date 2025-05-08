@@ -1,20 +1,20 @@
-import Room from './Room'
-import PremiumRoom from './PremiumRoom'
+import { Room } from './Room.js';
+import PremiumRoom from './PremiumRoom.js';
 
 export default class Hotel {
     constructor(name) {
-        this.rooms = [],
-        this.name = name,
-        this.loadFromLocalStorage()
+        this.rooms = [];
+        this.name = name;
+        this.loadFromLocalStorage();
     }
 
     addRoom(room) {
-        this.rooms.push(room)
-        return `Room ${room.number} has been added`
+        this.rooms.push(room);
+        return `Room ${room.number} has been added`;
     }
 
     getAvailableRooms() {
-        return this.rooms.filter(room => room.isAvailable)
+        return this.rooms.filter(room => room.isAvailable);
     }
 
     saveToLocalStorage(){
@@ -23,46 +23,50 @@ export default class Hotel {
                 number: room.number,
                 type: room.type,
                 isAvailable: room.isAvailable
-            }
+            };
 
             if (room.bookedBy){
-                roomData.bookedBy = room.bookedBy
+                roomData.bookedBy = room.bookedBy;
             }
 
             if (room.premiumFeature){
-                roomData.premiumFeature = room.premiumFeature
+                roomData.premiumFeature = room.premiumFeature;
             }
-            return roomData
+            return roomData;
         });
 
-        localStorage.setItem(`hotel_${this.name}`, JSON.stringify(roomsData))
+        localStorage.setItem(`hotel_${this.name}`, JSON.stringify(roomsData));
     }
 
     loadFromLocalStorage(){
-        const savedData = localStorage.getItem(`hotel_${this.name}`)
+        if (typeof localStorage === 'undefined') {
+            return; // Wyjdź wcześnie jeśli localStorage nie jest dostępny (np. w środowisku testowym)
+        }
+        
+        const savedData = localStorage.getItem(`hotel_${this.name}`);
 
         if (savedData){
-            const roomsData = JSON.parse(savedData)
+            const roomsData = JSON.parse(savedData);
 
-            this.rooms = []
+            this.rooms = [];
 
             roomsData.forEach(roomData => {
                 let room;
 
                 if (roomData.premiumFeature){
-                    room = new PremiumRoom(roomData.number, roomData.type, roomData.premiumFeature)
+                    room = new PremiumRoom(roomData.number, roomData.type, roomData.premiumFeature);
                 }
                 else {
-                    room = new Room(roomData.number, roomData.type)
+                    room = new Room(roomData.number, roomData.type);
                 }
 
-                room.isAvailable = roomData.isAvailable
+                room.isAvailable = roomData.isAvailable;
 
                 if (roomData.bookedBy) 
-                    room.bookedBy = roomData.bookedBy
+                    room.bookedBy = roomData.bookedBy;
 
-                this.rooms.push(room)
-            })
+                this.rooms.push(room);
+            });
         }
     }
 }
