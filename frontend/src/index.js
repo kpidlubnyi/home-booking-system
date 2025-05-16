@@ -76,16 +76,42 @@ global.loadRoomReviews = async function(number) {
     }
 
     try {
-        const reviews = await HotelAPI.fetchReviews()
-        const reviewsHTML = reviews.map(review => 
+        const response = await fetch('http://localhost:3000/reviews');
+        const reviews = await response.json();
+        
+        const sample = reviews
+            .filter(r => r.roomNumber === number)
+            .slice(0, 3);
+            
+        const reviewsHTML = sample.map(review => 
             `<div class="review">
                 <p><strong>${review.email}:</strong></p>
                 <p>${review.body}</p>
             </div>`
         ).join('')
-        reviewsContainer.innerHTML = reviewsHTML
+        
+        reviewsContainer.innerHTML = reviewsHTML || '<p>No reviews for this room yet.</p>'
     } catch (error) {
         reviewsContainer.innerHTML = `<p>Error loading reviews: ${error.message}</p>`
+    }
+};
+
+global.addReview = async function () {
+    const email = document.getElementById("reviewEmail").value.trim();
+    const roomNumber = parseInt(document.getElementById("reviewRoom").value.trim());
+    const body = document.getElementById("reviewBody").value.trim();
+    
+    const response = await fetch('http://localhost:3000/reviews', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ roomNumber, email, body })
+    });
+    
+    if (response.ok) {
+        alert('Review added!');
+        loadRoomReviews(roomNumber);
+    } else {
+        alert('Failed to add review.');
     }
 };
 

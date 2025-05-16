@@ -15,5 +15,14 @@
         <p id="authStatus"></p>
         <div id="roomsContainer"></div>
         <script src="./dist/main.js"></script>
+        <div id="reviewForm" style="margin-top: 30px; max-width: 500px; margin-left: auto; margin-right: auto;">
+            <h2>Add Room Review</h2>
+            <div style="display: flex; flex-direction: column; gap: 10px;">
+                <input type="text" id="reviewEmail" placeholder="Your email">
+                <input type="number" id="reviewRoom" placeholder="Room number">
+                <textarea id="reviewBody" placeholder="Your review" rows="4"></textarea>
+                <button onclick="addReview()">Add Review</button>
+            </div>
+        </div>
     </body>
 </html>
