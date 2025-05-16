@@ -2,7 +2,6 @@ import Hotel from './modules/Hotel'
 import Room from './modules/Room'
 import UI from './modules/services/UI'
 import PremiumRoom from './modules/PremiumRoom'
-import HotelAPI from './modules/services/HotelAPI'
 import UserManager from './modules/services/UserManager'
 import './style.scss'
 
@@ -98,20 +97,65 @@ global.loadRoomReviews = async function(number) {
 
 global.addReview = async function () {
     const email = document.getElementById("reviewEmail").value.trim();
-    const roomNumber = parseInt(document.getElementById("reviewRoom").value.trim());
+    const roomNumberInput = document.getElementById("reviewRoom").value.trim();
     const body = document.getElementById("reviewBody").value.trim();
     
-    const response = await fetch('http://localhost:3000/reviews', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ roomNumber, email, body })
-    });
+    if (!email) {
+        alert('Email is required.');
+        return;
+    }
     
-    if (response.ok) {
-        alert('Review added!');
-        loadRoomReviews(roomNumber);
-    } else {
-        alert('Failed to add review.');
+    if (!roomNumberInput) {
+        alert('Room number is required.');
+        return;
+    }
+    
+    if (!body) {
+        alert('Review content is required.');
+        return;
+    }
+    
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email)) {
+        alert('Please enter a valid email address.');
+        return;
+    }
+    
+    const roomNumber = parseInt(roomNumberInput);
+    if (isNaN(roomNumber)) {
+        alert('Room number must be a valid number.');
+        return;
+    }
+    
+    const roomExists = hotel.rooms.some(room => room.number === roomNumber);
+    if (!roomExists) {
+        alert(`Room ${roomNumber} does not exist in our hotel.`);
+        return;
+    }
+    
+    try {
+        const response = await fetch('http://localhost:3000/reviews', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ roomNumber, email, body })
+        });
+        
+        if (response.ok) {
+            document.getElementById("reviewEmail").value = '';
+            document.getElementById("reviewRoom").value = '';
+            document.getElementById("reviewBody").value = '';
+            
+            alert('Review added successfully!');
+            
+            loadRoomReviews(roomNumber);
+        } else {
+            const errorData = await response.json().catch(() => null);
+            const errorMessage = errorData?.message || 'An error occurred while adding the review.';
+            alert(`Failed to add review: ${errorMessage}`);
+        }
+    } catch (error) {
+        console.error('Error adding review:', error);
+        alert(`Failed to add review: ${error.message || 'Server connection error'}`);
     }
 };
 

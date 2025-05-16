@@ -40,7 +40,7 @@ export default class Hotel {
 
     loadFromLocalStorage(){
         if (typeof localStorage === 'undefined') {
-            return; // Wyjdź wcześnie jeśli localStorage nie jest dostępny (np. w środowisku testowym)
+            return;
         }
         
         const savedData = localStorage.getItem(`hotel_${this.name}`);
