@@ -86,12 +86,98 @@ global.loadRoomReviews = async function(number) {
             `<div class="review">
                 <p><strong>${review.email}:</strong></p>
                 <p>${review.body}</p>
+                <button onclick="editReview('${review.id}')" style="margin-top: 5px; padding: 5px 10px; background-color: #007bff; color: white; border: none; border-radius: 3px; cursor: pointer;">Edit</button>
             </div>`
         ).join('')
         
         reviewsContainer.innerHTML = reviewsHTML || '<p>No reviews for this room yet.</p>'
     } catch (error) {
         reviewsContainer.innerHTML = `<p>Error loading reviews: ${error.message}</p>`
+    }
+};
+
+global.editReview = async function(id) {
+    try {
+        const response = await fetch('http://localhost:3000/reviews');
+        const reviews = await response.json();
+        const currentReview = reviews.find(review => review.id === id);
+        
+        if (!currentReview) {
+            alert('No reviews found for editing');
+            return;
+        }
+        
+        const newEmail = prompt('Enter new email:', currentReview.email);
+        if (newEmail === null) return; 
+        
+        const newRoomNumber = prompt('Enter the new room number:', currentReview.roomNumber);
+        if (newRoomNumber === null) return; 
+        
+        const newBody = prompt('Enter new review content:', currentReview.body);
+        if (newBody === null) return; 
+        
+        if (!newEmail.trim()) {
+            alert('Email must not be empty!');
+            return;
+        }
+        
+        if (!newRoomNumber.trim()) {
+            alert('The room number must not be blank!');
+            return;
+        }
+        
+        if (!newBody.trim()) {
+            alert('The content of the review must not be empty!');
+            return;
+        }
+        
+        const roomNumberInt = parseInt(newRoomNumber);
+        if (isNaN(roomNumberInt)) {
+            alert('The room number must be a number!');
+            return;
+        }
+        
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        if (!emailRegex.test(newEmail)) {
+            alert('Enter a valid email address!');
+            return;
+        }
+        
+        const roomExists = hotel.rooms.some(room => room.number === roomNumberInt);
+        if (!roomExists) {
+            alert(`Room ${roomNumberInt} does not exist in our hotel!`);
+            return;
+        }
+        
+        const updateResponse = await fetch(`http://localhost:3000/reviews/${id}`, {
+            method: 'PUT',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                email: newEmail.trim(),
+                roomNumber: roomNumberInt,
+                body: newBody.trim()
+            })
+        });
+        
+        if (updateResponse.ok) {
+            alert('The review has been successfully updated!');
+            
+            loadRoomReviews(roomNumberInt);
+            
+            if (roomNumberInt !== currentReview.roomNumber) {
+                loadRoomReviews(currentReview.roomNumber);
+            }
+        } else {
+            const errorData = await updateResponse.json().catch(() => null);
+            const errorMessage = errorData?.message || 'An error occurred while updating the review.';
+            alert(`Failed to update review: ${errorMessage}`);
+        }
+        
+    } catch (error) {
+        console.error('Error when editing reviews:', error);
+        alert(`Failed to update review: ${error.message || 'Server connection error'}`);
     }
 };
 
