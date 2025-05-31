@@ -18,7 +18,6 @@ if (savedUser) {
     currentUser = user
 }
 
-
 if (hotel.rooms.length === 0){
     const room101 = new Room(101, 'single')
     const room102 = new Room(102, 'double')
@@ -35,7 +34,19 @@ if (hotel.rooms.length === 0){
 else { hotel.loadFromLocalStorage()}
 
 const ui = new UI(hotel)
-ui.renderRooms()
+
+global.loadRoomsWithReviews = async function() {
+    try {
+        const response = await fetch("http://localhost:3000/reviews");
+        const reviews = await response.json();
+        ui.renderRooms(reviews);
+    } catch (error) {
+        console.error('Error loading reviews for rooms:', error);
+        ui.renderRooms([]);
+    }
+};
+
+loadRoomsWithReviews();
 
 global.bookRoom = function(number) {
     if (currentUser) {
@@ -50,7 +61,7 @@ global.bookRoom = function(number) {
             else {
                 alert('Card number must contain 16 digits!')
             }
-            ui.renderRooms()
+            loadRoomsWithReviews() 
         }
     }
 }
@@ -62,7 +73,7 @@ global.cancelBooking = function (number){
         room.bookedBy = null
         room.saveChanges()
         alert(room.cancelBooking())
-        ui.renderRooms()
+        loadRoomsWithReviews() 
     }
 }
 
@@ -83,16 +94,48 @@ global.loadRoomReviews = async function(number) {
             .slice(0, 3);
             
         const reviewsHTML = sample.map(review => 
-            `<div class="review">
+            `<div id="review-${review.id}" class="review">
                 <p><strong>${review.email}:</strong></p>
                 <p>${review.body}</p>
-                <button onclick="editReview('${review.id}')" style="margin-top: 5px; padding: 5px 10px; background-color: #007bff; color: white; border: none; border-radius: 3px; cursor: pointer;">Edit</button>
+                <div style="margin-top: 10px;">
+                    <button onclick="editReview('${review.id}')" style="margin-right: 5px; padding: 5px 10px; background-color: #007bff; color: white; border: none; border-radius: 3px; cursor: pointer;">Edit</button>
+                    <button onclick="deleteReview('${review.id}', ${review.roomNumber})" style="padding: 5px 10px; background-color: #dc3545; color: white; border: none; border-radius: 3px; cursor: pointer;">Delete</button>
+                </div>
             </div>`
         ).join('')
         
         reviewsContainer.innerHTML = reviewsHTML || '<p>No reviews for this room yet.</p>'
     } catch (error) {
         reviewsContainer.innerHTML = `<p>Error loading reviews: ${error.message}</p>`
+    }
+};
+
+global.deleteReview = async function(id, roomNumber) {
+    const confirmed = confirm("Are you sure you want to delete this review?");
+    
+    if (!confirmed) return;
+    
+    try {
+        const response = await fetch(`http://localhost:3000/reviews/${id}`, {
+            method: 'DELETE',
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        });
+        
+        if (response.ok) {
+            alert("Review deleted!");
+            loadRoomReviews(roomNumber);
+            loadRoomsWithReviews();
+        } else {
+            const errorData = await response.json().catch(() => null);
+            const errorMessage = errorData?.message || 'An error occurred while deleting the review.';
+            alert(`Failed to delete review: ${errorMessage}`);
+        }
+        
+    } catch (error) {
+        console.error('Error deleting review:', error);
+        alert(`Failed to delete review: ${error.message || 'Server connection error'}`);
     }
 };
 
@@ -169,6 +212,8 @@ global.editReview = async function(id) {
             if (roomNumberInt !== currentReview.roomNumber) {
                 loadRoomReviews(currentReview.roomNumber);
             }
+            
+            loadRoomsWithReviews();
         } else {
             const errorData = await updateResponse.json().catch(() => null);
             const errorMessage = errorData?.message || 'An error occurred while updating the review.';
@@ -234,6 +279,7 @@ global.addReview = async function () {
             alert('Review added successfully!');
             
             loadRoomReviews(roomNumber);
+            loadRoomsWithReviews();
         } else {
             const errorData = await response.json().catch(() => null);
             const errorMessage = errorData?.message || 'An error occurred while adding the review.';
@@ -264,7 +310,7 @@ global.loginUser = function() {
         document.getElementById('authStatus').textContent = `Logged in as: ${username}`
         document.getElementById('LogoutBtn').style.display = 'inline'
         currentUser = username
-        ui.renderRooms()
+        loadRoomsWithReviews() 
     }
 }
 
@@ -273,6 +319,6 @@ global.logoutUser = function() {
     currentUser = null
     document.getElementById('authStatus').textContent = 'Not logged in'
     document.getElementById('LogoutBtn').style.display = 'none'
-    ui.renderRooms()
+    loadRoomsWithReviews() 
     location.reload()
 }

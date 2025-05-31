@@ -3,7 +3,7 @@ export default class UI {
         this.hotel = hotel;
     }
     
-    renderRooms() {
+    renderRooms(reviews = []) {
         const container = document.getElementById("roomsContainer");
         container.innerHTML = "";
         
@@ -15,6 +15,9 @@ export default class UI {
             const premiumClass = room.premiumFeature ? "premium-room" : ""
             const bookedBy = room.bookedBy ? `<p><strong>Booked by:</strong> ${room.bookedBy}</p>` : "";
             
+            const count = reviews.filter(r => r.roomNumber === room.number).length;
+            const reviewsInfo = count === 0 ? "No reviews yet" : `${count} review${count === 1 ? '' : 's'}`;
+            
             const bookDisabled = !isLoggedIn || !room.isAvailable ? "disabled" : "";
             const cancelDisabled = room.isAvailable || !isLoggedIn || (room.bookedBy !== currentUser) ? "disabled" : "";
 
@@ -24,6 +27,7 @@ export default class UI {
             roomDiv.innerHTML = `
                 <h3>Room ${room.number} (${room.type})</h3>
                 <p>Status: ${room.isAvailable ? "Available" : "Booked"}</p>
+                <p><strong>Reviews:</strong> ${reviewsInfo}</p>
                 ${isPremium}
                 ${bookedBy}
                 <div class="room-actions">
