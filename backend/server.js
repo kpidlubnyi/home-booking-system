@@ -34,3 +34,38 @@ app.post("/reviews", async (req, res) => {
 app.listen(PORT, () => {
   console.log(`Server running at http://localhost:${PORT}`);
 });
+
+app.put("/reviews/:id", async (req, res) => {
+  const { id } = req.params;
+  const { email, roomNumber, body } = req.body;
+  
+  if (!email || !roomNumber || !body) {
+    return res.status(400).json({ 
+      message: "Email, roomNumber and body are required" 
+    });
+  }
+  
+  await db.read();
+  
+  const reviewIndex = db.data.reviews.findIndex(review => review.id === id);
+  
+  if (reviewIndex === -1) {
+    return res.status(404).json({ 
+      message: "Review not found" 
+    });
+  }
+  
+  db.data.reviews[reviewIndex] = {
+    ...db.data.reviews[reviewIndex],
+    email,
+    roomNumber: parseInt(roomNumber),
+    body
+  };
+  
+  await db.write();
+  
+  res.json({ 
+    message: "The review has been updated", 
+    review: db.data.reviews[reviewIndex] 
+  });
+});

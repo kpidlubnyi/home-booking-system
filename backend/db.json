@@ -1,0 +1,28 @@
+{
+  "reviews": [
+    {
+      "id": "uLHGiAhXLrNKuIGloRuBD",
+      "roomNumber": 102,
+      "email": "john_doe@gmail.com",
+      "body": "May be"
+    },
+    {
+      "id": "jJu7NBbPPNoofZcyHK-ui",
+      "roomNumber": 201,
+      "email": "john_doe@yahoo.com",
+      "body": "Too expensive for one 4kg dumbbell >:("
+    },
+    {
+      "id": "eVaPAhGz7uLTiKuLID5TO",
+      "roomNumber": 202,
+      "email": "john_doe@yahoo.com",
+      "body": "Too expensive for one 4kg dumbbell >:("
+    },
+    {
+      "id": "85RwXmfzKEYcE32uLnOBl",
+      "roomNumber": 201,
+      "email": "jane_doe@gmail.com",
+      "body": "Good )"
+    }
+  ]
+}
