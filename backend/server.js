@@ -69,3 +69,32 @@ app.put("/reviews/:id", async (req, res) => {
     review: db.data.reviews[reviewIndex] 
   });
 });
+
+
+app.delete("/reviews/:id", async (req, res) => {
+    const { id } = req.params;
+    
+    try {
+        await db.read();
+        
+        const reviewIndex = db.data.reviews.findIndex(review => review.id === id);
+        
+        if (reviewIndex === -1) {
+            return res.status(404).json({ 
+                message: "Review not found." 
+            });
+        }
+        
+        db.data.reviews.splice(reviewIndex, 1);
+        
+        await db.write();
+        
+        res.json({ message: "Review deleted." });
+        
+    } catch (error) {
+        console.error('Error deleting review:', error);
+        res.status(500).json({ 
+            message: "Internal server error" 
+        });
+    }
+});
