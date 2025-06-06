@@ -7,23 +7,53 @@ export default class UserManager {
         this.loadUsers()
     }
 
-    register(uname, password) {
-        if (this.users.find(user => user.username === uname)) {
-            alert("Username already taken!")
-            return false
-        }
+    async register(uname, password) {
+        try {
+            const response = await fetch("http://localhost:3000/signup", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ username: uname, password })
+            });
 
-        let user = new User(uname, password)
-        this.users.push(user)
-        this.saveUsers()
-        return true
+            const data = await response.json();
+
+            if (response.ok) {
+                let user = new User(uname, password)
+                this.users.push(user)
+                this.saveUsers()
+                return true;
+            } else {
+                alert(data.message || "Registration failed");
+                return false;
+            }
+        } catch (error) {
+            console.error('Registration error:', error);
+            alert("Registration failed: Server connection error");
+            return false;
+        }
     }
 
-    login(username, password) {
-        let user = this.users.find(u => u.username === username)
-        if (user && user.validatePassword(password))
-            return true
-        return false
+    async login(username, password) {
+        try {
+            const response = await fetch("http://localhost:3000/login", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ username, password })
+            });
+
+            const data = await response.json();
+
+            if (response.ok) {
+                return true;
+            } else {
+                alert(data.message || "Login failed");
+                return false;
+            }
+        } catch (error) {
+            console.error('Login error:', error);
+            alert("Login failed: Server connection error");
+            return false;
+        }
     }
 
     saveUsers() {

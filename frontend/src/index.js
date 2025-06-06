@@ -291,25 +291,42 @@ global.addReview = async function () {
     }
 };
 
-global.registerUser = function() {
+global.registerUser = async function() {
     let username = document.getElementById('username').value
     let password = document.getElementById('password').value
 
-    let successful = userManager.register(username, password)
-    if (successful)
+    if (!username || !password) {
+        alert('Please enter both username and password');
+        return;
+    }
+
+    let successful = await userManager.register(username, password)
+    if (successful) {
         document.getElementById('authStatus').textContent = `Registered: ${username}`
+        document.getElementById('username').value = '';
+        document.getElementById('password').value = '';
+    }
 }
 
-global.loginUser = function() {
+global.loginUser = async function() {
     let username = document.getElementById('username').value
     let password = document.getElementById('password').value
 
-    let successful = userManager.login(username, password)
+    if (!username || !password) {
+        alert('Please enter both username and password');
+        return;
+    }
+
+    let successful = await userManager.login(username, password)
     if (successful) {
         sessionStorage.setItem('loggedInUser', JSON.stringify({'username':username, 'password':password}))
         document.getElementById('authStatus').textContent = `Logged in as: ${username}`
         document.getElementById('LogoutBtn').style.display = 'inline'
         currentUser = username
+        
+        document.getElementById('username').value = '';
+        document.getElementById('password').value = '';
+        
         loadRoomsWithReviews() 
     }
 }
