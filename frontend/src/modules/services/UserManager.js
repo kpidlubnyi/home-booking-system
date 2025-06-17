@@ -44,7 +44,8 @@ export default class UserManager {
             const data = await response.json();
 
             if (response.ok) {
-                return true;
+                sessionStorage.setItem("token", data.token);
+                return data.token;
             } else {
                 alert(data.message || "Login failed");
                 return false;

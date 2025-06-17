@@ -10,12 +10,17 @@ global.hotelInstance = hotel
 const userManager = new UserManager('1')
 let currentUser = null
 
-const savedUser = sessionStorage.getItem('loggedInUser')
-if (savedUser) {
-    let user = JSON.parse(savedUser).username
-    document.getElementById('authStatus').textContent = `Logged in as: ${user}`
-    document.getElementById('LogoutBtn').style.display = 'inline'
-    currentUser = user
+const token = sessionStorage.getItem("token");
+if (token) {
+    try {
+        const payload = JSON.parse(atob(token.split(".")[1]));
+        currentUser = { username: payload.username };
+        document.getElementById('authStatus').textContent = `Logged in as: ${currentUser.username}`;
+        document.getElementById('LogoutBtn').style.display = 'inline';
+    } catch (error) {
+        console.error('Invalid token:', error);
+        sessionStorage.removeItem("token");
+    }
 }
 
 if (hotel.rooms.length === 0){
@@ -54,7 +59,7 @@ global.bookRoom = function(number) {
         if (room){
             let success = room.book()
             if (success) {
-                room.bookedBy = currentUser
+                room.bookedBy = currentUser.username
                 room.saveChanges()
                 alert(`Thanks for booking Room ${room.number}!\nEntered card is : ${room.getMaskedCardNumber()}\nBooked by: ${room.bookedBy}`)
             }
@@ -110,17 +115,31 @@ global.loadRoomReviews = async function(number) {
     }
 };
 
+async function makeAuthenticatedRequest(url, options = {}) {
+    const token = sessionStorage.getItem("token");
+    const headers = {
+        "Content-Type": "application/json",
+        ...(options.headers || {})
+    };
+    
+    if (token) {
+        headers["Authorization"] = `Bearer ${token}`;
+    }
+    
+    return fetch(url, {
+        ...options,
+        headers
+    });
+}
+
 global.deleteReview = async function(id, roomNumber) {
     const confirmed = confirm("Are you sure you want to delete this review?");
     
     if (!confirmed) return;
     
     try {
-        const response = await fetch(`http://localhost:3000/reviews/${id}`, {
-            method: 'DELETE',
-            headers: {
-                'Content-Type': 'application/json'
-            }
+        const response = await makeAuthenticatedRequest(`http://localhost:3000/reviews/${id}`, {
+            method: 'DELETE'
         });
         
         if (response.ok) {
@@ -129,7 +148,7 @@ global.deleteReview = async function(id, roomNumber) {
             loadRoomsWithReviews();
         } else {
             const errorData = await response.json().catch(() => null);
-            const errorMessage = errorData?.message || 'An error occurred while deleting the review.';
+            const errorMessage = errorData?.message || errorData?.error || 'An error occurred while deleting the review.';
             alert(`Failed to delete review: ${errorMessage}`);
         }
         
@@ -192,11 +211,8 @@ global.editReview = async function(id) {
             return;
         }
         
-        const updateResponse = await fetch(`http://localhost:3000/reviews/${id}`, {
+        const updateResponse = await makeAuthenticatedRequest(`http://localhost:3000/reviews/${id}`, {
             method: 'PUT',
-            headers: {
-                'Content-Type': 'application/json'
-            },
             body: JSON.stringify({
                 email: newEmail.trim(),
                 roomNumber: roomNumberInt,
@@ -216,7 +232,7 @@ global.editReview = async function(id) {
             loadRoomsWithReviews();
         } else {
             const errorData = await updateResponse.json().catch(() => null);
-            const errorMessage = errorData?.message || 'An error occurred while updating the review.';
+            const errorMessage = errorData?.message || errorData?.error || 'An error occurred while updating the review.';
             alert(`Failed to update review: ${errorMessage}`);
         }
         
@@ -265,9 +281,8 @@ global.addReview = async function () {
     }
     
     try {
-        const response = await fetch('http://localhost:3000/reviews', {
+        const response = await makeAuthenticatedRequest('http://localhost:3000/reviews', {
             method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ roomNumber, email, body })
         });
         
@@ -282,7 +297,7 @@ global.addReview = async function () {
             loadRoomsWithReviews();
         } else {
             const errorData = await response.json().catch(() => null);
-            const errorMessage = errorData?.message || 'An error occurred while adding the review.';
+            const errorMessage = errorData?.message || errorData?.error || 'An error occurred while adding the review.';
             alert(`Failed to add review: ${errorMessage}`);
         }
     } catch (error) {
@@ -317,12 +332,13 @@ global.loginUser = async function() {
         return;
     }
 
-    let successful = await userManager.login(username, password)
-    if (successful) {
-        sessionStorage.setItem('loggedInUser', JSON.stringify({'username':username, 'password':password}))
-        document.getElementById('authStatus').textContent = `Logged in as: ${username}`
+    let token = await userManager.login(username, password)
+    if (token) {
+        const payload = JSON.parse(atob(token.split(".")[1]));
+        currentUser = { username: payload.username };
+        
+        document.getElementById('authStatus').textContent = `Logged in as: ${currentUser.username}`
         document.getElementById('LogoutBtn').style.display = 'inline'
-        currentUser = username
         
         document.getElementById('username').value = '';
         document.getElementById('password').value = '';
@@ -332,7 +348,7 @@ global.loginUser = async function() {
 }
 
 global.logoutUser = function() {
-    sessionStorage.removeItem('loggedInUser')
+    sessionStorage.removeItem('token')
     currentUser = null
     document.getElementById('authStatus').textContent = 'Not logged in'
     document.getElementById('LogoutBtn').style.display = 'none'

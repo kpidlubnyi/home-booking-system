@@ -5,6 +5,10 @@ import { Low } from 'lowdb';
 import { JSONFile } from 'lowdb/node';
 import { nanoid } from 'nanoid';
 import bcrypt from 'bcryptjs';
+import jwt from 'jsonwebtoken';
+import dotenv from 'dotenv';
+
+dotenv.config();
 
 const app = express();
 const PORT = 3000;
@@ -13,12 +17,31 @@ app.use(bodyParser.json());
 const adapter = new JSONFile("db.json");
 const db = new Low(adapter, { reviews: [], users: [] });
 
+const JWT_SECRET = process.env.JWT_SECRET;
+
+function authMiddleware(req, res, next) {
+    const authHeader = req.headers.authorization;
+    const token = authHeader && authHeader.split(" ")[1];
+    
+    if (!token) {
+        return res.status(401).json({ error: "No token provided" });
+    }
+    
+    try {
+        const decoded = jwt.verify(token, JWT_SECRET);
+        req.user = decoded;
+        next();
+    } catch (err) {
+        return res.status(403).json({ error: "Invalid token" });
+    }
+}
+
 app.get("/reviews", async (req, res) => {
   await db.read();
   res.json(db.data.reviews);
 });
 
-app.post("/reviews", async (req, res) => {
+app.post("/reviews", authMiddleware, async (req, res) => {
   const { roomNumber, email, body } = req.body;
   const newReview = {
     id: nanoid(),
@@ -91,17 +114,15 @@ app.post("/login", async (req, res) => {
     });
   }
   
-  res.json({ 
-    message: "Login successful",
-    username: user.username
-  });
+  const token = jwt.sign({ username }, JWT_SECRET, { expiresIn: "2h" });
+  res.json({ token });
 });
 
 app.listen(PORT, () => {
   console.log(`Server running at http://localhost:${PORT}`);
 });
 
-app.put("/reviews/:id", async (req, res) => {
+app.put("/reviews/:id", authMiddleware, async (req, res) => {
   const { id } = req.params;
   const { email, roomNumber, body } = req.body;
   
@@ -136,7 +157,7 @@ app.put("/reviews/:id", async (req, res) => {
   });
 });
 
-app.delete("/reviews/:id", async (req, res) => {
+app.delete("/reviews/:id", authMiddleware, async (req, res) => {
     const { id } = req.params;
     
     try {

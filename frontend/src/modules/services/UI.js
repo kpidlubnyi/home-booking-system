@@ -7,8 +7,20 @@ export default class UI {
         const container = document.getElementById("roomsContainer");
         container.innerHTML = "";
         
-        const isLoggedIn = sessionStorage.getItem('loggedInUser') !== null;
-        const currentUser = isLoggedIn ? JSON.parse(sessionStorage.getItem('loggedInUser')).username : null;
+        const token = sessionStorage.getItem('token');
+        let isLoggedIn = false;
+        let currentUser = null;
+        
+        if (token) {
+            try {
+                const payload = JSON.parse(atob(token.split(".")[1]));
+                isLoggedIn = true;
+                currentUser = payload.username;
+            } catch (error) {
+                console.error('Invalid token:', error);
+                sessionStorage.removeItem('token');
+            }
+        }
 
         this.hotel.rooms.forEach(room => {
             const isPremium = room.premiumFeature ? `<p><strong>Premium Service:</strong> ${room.premiumFeature}</p>` : ""
